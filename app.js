@@ -24,7 +24,7 @@ app.use(function(req, res, next) {
 
 
 app.get("/",function(req,res){
-  res.sendFile(__dirname + '/search.html');
+  res.sendFile(__dirname + '/home.html');
  
 });
 
