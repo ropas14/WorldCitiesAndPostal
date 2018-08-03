@@ -1,12 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const levenshtein = require('fast-levenshtein');
+var jsonfile = require('jsonfile');
 const app = express();
 const morgan =require('morgan');
-var cities = require("./cities.json");
-var countryResults=[];
+var AdmZip = require('adm-zip');
 
- 
+	 // reading archives
+const zip = new AdmZip("./dtaJson.zip");
+const zipEntries = zip.getEntries(); // an array of ZipEntry records
+const cities =JSON.parse(zipEntries[0].getData().toString('utf8'));
+//console.log(cities.US);
+///var cities =jsonfile.readFileSync("dtaJson.json");
+var countryResults=[];
 
 app.set('port', process.env.PORT || 3000);
 app.use(morgan('dev'));
@@ -24,52 +30,59 @@ app.use(function(req, res, next) {
 
 
 app.get("/",function(req,res){
+
   res.sendFile(__dirname + '/home.html');
- 
+
 });
 
 app.get('/api/worldcities',function(req,res){
-	var meds = req.query.search.trim().toLowerCase();	
- 
-  cities.forEach(function(result){
-    //compare the search with country and postal code   
-   });
-    
-      res.json();
-     
+	var country = req.query.c.trim().toUpperCase();
+  var pcode=req.query.p.trim().toLowerCase();
+  var item=cities[country];
+  var results=[];
+ Object.keys(item).forEach(function(pc) {
+    if(new RegExp(pcode).test(pc)){
+       var towns =item[pc];
+       var ed = levenshtein.get(pc, pcode, { useCollator: true});
+       towns.forEach(function(tn) {
+       console.log(pc+"=="+tn);
+       var twn = tn.split("#");
+       var sw=1;
+       if(pc.startsWith(pcode)){
+         sw=0;
+       }
+       //var str =`${pn}#${an1}#${ac1}#${lt}#${ln}#${ac}`;
+       var itm={
+             cc:country,
+             ld:ed,
+             sw:sw, //start with
+             pc:pc,
+             pn:twn[0],
+             an1:twn[1],
+             ac1:twn[2],
+             lt:twn[3],
+             ln:twn[4],
+             ac:twn[5]
+       }
+       results.push(itm);
+     });
+    }
+ });
+
+      console.log(country+" "+pcode+" "+item);
+      results.sort(sortbyDistance);
+      results.sort(sortbyDistance);
+      res.jsonp(results);
+
 });
 
 
-function filteritems(meds,reslt,results){
-       var cresults = [];
-      // calculate distance 
-        var distance = levenshtein.get(meds, reslt, { useCollator: true});
-       if(reslt.startsWith(meds)){     
-        results.distance=distance;
-        countryResults.push(results);
-        cresults.push(results);    
-        }
-       else if(reslt.includes(meds)){
-         var num=0;
-         for(var i=0 ; i<cresults.length ; i++){
-           if(cresults[i]==rslt){
-            num++;
-           }
-         }
-      if(num==0){
-        // loop in here if drugname is not present in drugclas array
-        
-         }        
-       }
-       else{
-          // do something     
-        }
-}
-
 function sortbyDistance(a,b){
-  var distanc = parseInt(a.distance) - parseInt(b.distance);
-  return distanc;
-
+  var dist = parseInt(a.sw) - parseInt(b.sw);
+  if(dist===0 ){
+     return parseInt(a.ld) - parseInt(b.ld);
+  }
+  return dist;
 }
 
 app.listen(app.get('port'));
