@@ -5,36 +5,34 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<style type="text/css">
-  #btnSubmit{
-    width: 120px;
-    height: 35px;
-    border: none;
-    outline: none;
-    color: #c9e2e4;
-    font-size: 14px;
-    text-shadow: 0 1px rgba(0,0,0,0.4);
-    background-color: #072047;
-    border-radius: 3px;
-    font-weight: 700;
- }
-#btnSubmit:hover{
-    background-color:#081e3c;
-    color: #fff;
-    cursor:pointer
-}
+	<style type="text/css">
+       #btnSubmit{
+        width: 120px;
+        height: 35px;
+        border: none;
+        outline: none;
+        color: #fff;
+        font-size: 14px;
+        text-shadow: 0 1px rgba(0,0,0,0.4);
+        background-color: #4e1c28;
+        border-radius: 3px;
+       font-weight: 700;
+		       }
+		#btnSubmit:hover{
+        background-color:#5a4e51;
+        cursor:pointer
+           }
    table { 
   width: 100%; 
   border-collapse: collapse;
   empty-cells: hide; 
-  margin-top: 25px;
 }
 /* Zebra striping */
 tr:nth-of-type(odd) { 
   background: #eee; 
 }
 th { 
-  background: #170b31; 
+  background: #330c16; 
   color: white; 
   font-weight: bold; 
 }
@@ -44,53 +42,27 @@ td, th {
   text-align: left; 
 }
  
-tr td:hover { background: #081e3c; color: #FFF; }  
-
-::-webkit-input-placeholder { /* WebKit, Blink, Edge */
-    color: #d70000;
-}
-:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-   color:  #d70000;
-   opacity:  1;
-}
-::-moz-placeholder { /* Mozilla Firefox 19+ */
-   color: #d70000;
-   opacity:  1;
-}
-:-ms-input-placeholder { /* Internet Explorer 10-11 */
-   color: #d70000;
-}
-::-ms-input-placeholder { /* Microsoft Edge */
-   color: #d70000;
-}
-
-::placeholder { /* Most modern browsers support this now. */
-   color: #d70000;
-}
-
-</style>  
+tr td:hover { background: #666; color: #FFF; }  
+	</style>
 </head>
 
 <body>
-<h1 style="color:#072047;"><em style="color: #11052e"><b>World</b></em> Cities LookUp </h1>
+<h1 style="color: #5a091f;">Medication Data Lookup</h1>
 <form id="form1" action="" title="" method="post">
       <div>          
-        <input type="text" id="txtcountry" placeholder="enter country"   name="search " style="padding: 6px 30px 8px 20px;border: 2px solid #082d1d">
-        <input type="text" id="txtpcode"   placeholder="enter postal code" name="search " style="padding: 6px 30px 8px 20px;border:2px solid #082d1d">
+        <input type="text" id="txtsearch" name="search " style="padding: 6px 30px 8px 20px;border: 2px solid #6f6f6f;">
        <input type="submit" id="btnSubmit"  name="submitButton" value="Search">
       </div>
  </form>
 
 <table id="table-items">
 	<thead id="tableHeaders">
-	  <tr>
-      <th>Postal Code</th>
-      <th>Country</th>
-      <th>Geo(long,lat)</th>
-      <th>Place Name</th>
-      <th>Admin 1</th>
-      <th>Admin 2</th>
-      <th>Admin 3</th>
+	<tr>
+		   <th>Drug</th>
+        <th>Description</th>
+        <th>Dosages</th>
+        <th>Distance</th>
+        <th>Popularity</th>
     </tr>
 	</thead>
 	<tbody id= "tableData">
@@ -100,23 +72,63 @@ tr td:hover { background: #081e3c; color: #FFF; }
 
 </table>
 
+<table id="table2">
+	<thead id="theaders">
+	<tr>
+        <th>Drug</th>
+        <th>Classification</th>
+        <th>Description</th>
+        <th>Dosages</th>
+        <th>Distance</th>
+    </tr>
+	</thead>
+	<tbody id="data">
+		
+	</tbody>	
+	
+
+</table>
 <script type="text/javascript">	
 $(function(){
- // $('table').hide();
+  $('table').hide();
   $('#btnSubmit').click(function (e){  
    e.preventDefault();     
-   var search = $('#txtcountry').val() +" " + $('#txtpcode').val();
+   var search = $('#txtsearch').val();
    $.ajax({
    type:'GET',
-   url :"/api/worldcities"+search,
+   url :"/api/medication/?search="+search,
    dataType: 'json',
    success: function(data) {
         console.log('success',data);
         $('tbody#tableData').empty();
-
-
+        $('tbody#data').empty();
+        var dclasses=0; var drugs=0;
+         $.each(data, function(index, element) {
+           if(element.classification){
+           	  dclasses++;
+           }
+           else {
+           	drugs++;
+           }
+        });
          $.each(data, function(indx, elemnt) {
-       
+           if(drugs>dclasses){
+           	 if(!elemnt.classification){
+           	$('tbody#tableData').append('<tr><td>'+ elemnt.drug +'</td><td>' +elemnt.description +'</td><td>'+elemnt.dosage+'</td><td>'+elemnt.distance+
+           		'</td><td>'+ elemnt.popularity+'</td></tr>' );
+           	  $('#table-items').show();	
+           	    $('#table2').hide();
+           	    }
+              }
+           else{
+               if(elemnt.classification){
+           	$('tbody#data').append('<tr><td>'+ elemnt.drug +'</td><td>'
+              +elemnt.classification+'</td><td>'+elemnt.description +'</td><td>'
+              +elemnt.dosage+'</td><td>'+elemnt.distance+'</td></tr>' );
+           	  $('#table2').show();
+           	   $('#table-items').hide();	
+           	    }
+               }
         });
    },
    error:function(exception){
