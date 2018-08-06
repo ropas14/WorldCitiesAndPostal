@@ -28,10 +28,10 @@ describe('API endpoints', function() {
     return chai.request(app)
       .get('/INVALID_PATH')
       .then(function(res) {
-        throw new Error('Path exists!');
+        expect(res).to.have.status(404);     
       })
       .catch(function(err) {
-        expect(err).to.have.status(404);
+          throw new Error('Path exists!');
       });
   });
 
