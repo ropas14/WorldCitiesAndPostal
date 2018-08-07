@@ -50,6 +50,12 @@ td, th {
  
 tr td:hover { background: #081e3c; color: #FFF; }  
 
+.noresults{
+   color:red;
+   font-weight: bold;
+   font-size: 18px;
+}
+
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
     color: #d70000;
 }
@@ -98,8 +104,8 @@ tr td:hover { background: #081e3c; color: #FFF; }
       <th>Geo(long,lat)</th>
       <th>Place Name</th>
       <th>Admin 1</th>
-      <th>Admin 2</th>
-      <th>Admin 3</th>
+      <th>AdminCode</th>
+      <th>Accuracy</th>
     </tr>
 	</thead>
 	<tbody id= "tableData">	
@@ -122,17 +128,23 @@ $(function(){
    success: function(data) {
         console.log('success',data);
     $('tbody#tableData').empty();
-      $.each(data, function(indx, elemnt) {
+    if(data.length==0){
+      $("#resultDetail #waiting").text("NO ITEMS FOUND").addClass("noresults")
+    }
+    else{
+       $.each(data, function(indx, elemnt) {
       if(elemnt.cc){
         $('tbody#tableData').append('<tr><td>'+ elemnt.pc +'</td><td>' +elemnt.cc +'</td><td>'+elemnt.lt+
        '</td><td>'+elemnt.pn+'</td><td>'+ elemnt.an1+'</td><td>' +elemnt.ac1+'</td><td>' +elemnt.ac+'</td></tr>');
-           	  $('#table-items').show();	
+              $('#table-items').show(); 
               $('#waiting').hide();
-           	  }
+              }
               else{
-                window.alert("no such item");
+              alert("no item found, try some other combination");
               }
         });
+    }
+
    },
     error:function(exception){
    	alert('Exception:'+exception);

@@ -36,11 +36,12 @@ app.get("/",function(req,res){
 });
 
 app.get('/api/worldcities',function(req,res){
-	var country = req.query.c.trim().toUpperCase();
+  var country = req.query.c.trim().toUpperCase();
   var pcode=req.query.p.trim().toLowerCase();
   var item=cities[country];
   var results=[];
- Object.keys(item).forEach(function(pc) {
+  if(item){
+     Object.keys(item).forEach(function(pc) {
     if(new RegExp(pcode).test(pc)){
        var towns =item[pc];
        var ed = levenshtein.get(pc, pcode, { useCollator: true});
@@ -68,13 +69,15 @@ app.get('/api/worldcities',function(req,res){
      });
     }
  });
-
-      console.log(country+" "+pcode+" "+item);
+     console.log(country+" "+pcode+" "+item);
+}
+ 
       results.sort(sortbyDistance);
       results.sort(sortbyDistance);
       res.jsonp(results);
 
 });
+
 
 
 function sortbyDistance(a,b){
