@@ -28,7 +28,7 @@ describe('API endpoints', function() {
   // GET - Invalid path
   it('should return Not Found', function() {
     return chai.request(app)
-      .get('/INVALID_PATH')
+      .get('/Invalidpath')
       .then(function(res) {
         expect(res).to.have.status(404);     
       })
