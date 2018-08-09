@@ -94,8 +94,9 @@ function sortbyDistance(a,b){
   }
   return dist;
 }
-
+if(!module.parent){
 app.listen(app.get('port'));
 console.log("server listening on port " + app.get('port'));
+}
 
 module.exports = app;
