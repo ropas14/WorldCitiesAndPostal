@@ -1,3 +1,3 @@
 test:
-	mocha -u tdd -—reporter spec
+	@./node_modules/.bin/mocha -u tdd --reporter spec
 .PHONY: test
