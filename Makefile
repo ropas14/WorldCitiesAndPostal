@@ -1,3 +1,3 @@
 test:
-mocha -u tdd -—reporter spec
+	mocha -u tdd -—reporter spec
 .PHONY: test
