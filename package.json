@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "make test"
   },
   "keywords": [
     "search",
@@ -18,7 +18,8 @@
     "express": "^4.16.3",
     "fast-levenshtein": "^2.0.6",
     "mongodb": "^3.1.1",
-    "morgan": "^1.9.0"
+    "morgan": "^1.9.0",
+    "puppeteer": "^1.6.2"
   },
   "devDependencies": {
     "chai": "^4.1.2",
