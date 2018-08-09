@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const levenshtein = require('fast-levenshtein');
-var jsonfile = require('jsonfile');
 const app = express();
 const morgan =require('morgan');
 var AdmZip = require('adm-zip');
@@ -41,35 +40,43 @@ app.get('/api/worldcities',function(req,res){
   var item=cities[country];
   var results=[];
   if(item){
-     Object.keys(item).forEach(function(pc) {
-    if(new RegExp(pcode).test(pc)){
-       var towns =item[pc];
-       var ed = levenshtein.get(pc, pcode, { useCollator: true});
-       towns.forEach(function(tn) {
-       console.log(pc+"=="+tn);
-       var twn = tn.split("#");
-       var sw=1;
-       if(pc.startsWith(pcode)){
-         sw=0;
-       }
-       //var str =`${pn}#${an1}#${ac1}#${lt}#${ln}#${ac}`;
-       var itm={
-             cc:country,
-             ld:ed,
-             sw:sw, //start with
-             pc:pc,
-             pn:twn[0],
-             an1:twn[1],
-             ac1:twn[2],
-             lt:twn[3],
-             ln:twn[4],
-             ac:twn[5]
-       }
-       results.push(itm);
+    Object.keys(item).forEach(function(pcStr) {
+    if(new RegExp(pcode).test(pcStr)){
+      console.log(pcStr+" <>>>>>>>>>>>>>");
+        var pcArr=  pcStr.split(' ');
+        console.log(pcArr+"<,,,,,,,,,,,,,,,");
+        pcArr.forEach(function(pc) {
+          if(new RegExp(pcode).test(pc)){
+             var towns =item[pcStr];
+             var ed = levenshtein.get(pc, pcode, { useCollator: true});
+             towns.forEach(function(tn) {
+             console.log(pc+"=="+tn);
+             var twn = tn.split("#");
+             var sw=1;
+             if(pc.startsWith(pcode)){
+                sw=0;
+             }
+            //var str =`${pn}#${an1}#${ac1}#${lt}#${ln}#${ac}`;
+             var itm={
+                cc:country,
+                ld:ed,
+                sw:sw, //start with
+                pc:pc,
+                pn:twn[0],
+                an1:twn[1],
+                ac1:twn[2],
+                lt:twn[3],
+                ln:twn[4],
+                ac:twn[5]
+            }
+           results.push(itm);
      });
+   }
+ });
     }
  });
-     console.log(country+" "+pcode+" "+item);
+
+      console.log(country+" "+pcode+" "+item);
 }
  
       results.sort(sortbyDistance);
